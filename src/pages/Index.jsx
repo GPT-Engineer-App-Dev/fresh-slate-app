@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useEvents, useAddEvent, useUpdateEvent, useDeleteEvent } from "../integrations/supabase/index.js";
 import { Container, Text, VStack, Heading, Button, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { FaPaintBrush, FaPlus } from "react-icons/fa";
-import EventCard from "../components/EventCard";
+import { Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import EventModal from "../components/EventModal";
 
 const Index = () => {
@@ -45,11 +45,35 @@ const Index = () => {
         <Button leftIcon={<FaPlus />} colorScheme="teal" size="lg" onClick={() => handleOpenModal()}>
           Add Event
         </Button>
-        <SimpleGrid columns={[1, null, 2]} spacing="40px" width="100%">
-          {events.map(event => (
-            <EventCard key={event.id} event={event} onEdit={() => handleOpenModal(event)} onDelete={() => handleDeleteEvent(event.id)} />
-          ))}
-        </SimpleGrid>
+        <Table variant="simple" width="100%">
+          <Thead>
+            <Tr>
+              <Th>Title</Th>
+              <Th>Description</Th>
+              <Th>Date</Th>
+              <Th>Venue ID</Th>
+              <Th>Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {events.map(event => (
+              <Tr key={event.id}>
+                <Td>{event.name}</Td>
+                <Td>{event.description}</Td>
+                <Td>{event.date}</Td>
+                <Td>{event.venue_id}</Td>
+                <Td>
+                  <Button leftIcon={<FaEdit />} colorScheme="blue" onClick={() => handleOpenModal(event)}>
+                    Edit
+                  </Button>
+                  <Button leftIcon={<FaTrash />} colorScheme="red" onClick={() => handleDeleteEvent(event.id)}>
+                    Delete
+                  </Button>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
       </VStack>
       )}
       <EventModal isOpen={isOpen} onClose={onClose} onSave={selectedEvent ? handleEditEvent : handleAddEvent} event={selectedEvent} />

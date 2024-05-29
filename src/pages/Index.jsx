@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEvents, useAddEvent, useUpdateEvent, useDeleteEvent } from "../integrations/supabase/index.js";
 import { Container, Text, VStack, Heading, Button, SimpleGrid, useDisclosure } from "@chakra-ui/react";
 import { FaPaintBrush, FaPlus } from "react-icons/fa";
 import EventCard from "../components/EventCard";
@@ -6,19 +7,23 @@ import EventModal from "../components/EventModal";
 
 const Index = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [events, setEvents] = useState([]);
+  const { data: events, isLoading, error } = useEvents();
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  const addEventMutation = useAddEvent();
+  const editEventMutation = useUpdateEvent();
+  const deleteEventMutation = useDeleteEvent();
+
   const handleAddEvent = (event) => {
-    setEvents([...events, event]);
+    addEventMutation.mutate(event);
   };
 
   const handleEditEvent = (updatedEvent) => {
-    setEvents(events.map(event => event.id === updatedEvent.id ? updatedEvent : event));
+    editEventMutation.mutate(updatedEvent);
   };
 
   const handleDeleteEvent = (eventId) => {
-    setEvents(events.filter(event => event.id !== eventId));
+    deleteEventMutation.mutate(eventId);
   };
 
   const handleOpenModal = (event = null) => {
@@ -28,7 +33,10 @@ const Index = () => {
 
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
-      <VStack spacing={4}>
+      {isLoading && <Text>Loading...</Text>}
+      {error && <Text>Error loading events</Text>}
+      {!isLoading && !error && (
+        <VStack spacing={4}>
         <Heading as="h1" size="2xl">Welcome to Your Blank Canvas</Heading>
         <Text fontSize="lg">Start creating your masterpiece with us.</Text>
         <Button leftIcon={<FaPaintBrush />} colorScheme="teal" size="lg">
@@ -43,6 +51,7 @@ const Index = () => {
           ))}
         </SimpleGrid>
       </VStack>
+      )}
       <EventModal isOpen={isOpen} onClose={onClose} onSave={selectedEvent ? handleEditEvent : handleAddEvent} event={selectedEvent} />
     </Container>
   );

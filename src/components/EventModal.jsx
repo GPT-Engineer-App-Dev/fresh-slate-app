@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, FormControl, FormLabel, Input, Textarea } from "@chakra-ui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, Button, FormControl, FormLabel, Input, Textarea, Select } from "@chakra-ui/react";
 
-const EventModal = ({ isOpen, onClose, onSave, event }) => {
+const EventModal = ({ isOpen, onClose, onSave, event, venues }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
@@ -53,8 +53,13 @@ const EventModal = ({ isOpen, onClose, onSave, event }) => {
             <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
           </FormControl>
           <FormControl id="venueId" mt={4}>
-            <FormLabel>Venue ID</FormLabel>
-            <Input value={venueId} onChange={(e) => setVenueId(e.target.value)} />
+            <FormLabel>Venue</FormLabel>
+            <Select value={venueId} onChange={(e) => setVenueId(e.target.value)}>
+              <option value="">Select Venue</option>
+              {venues.map(venue => (
+                <option key={venue.id} value={venue.id}>{venue.name}</option>
+              ))}
+            </Select>
           </FormControl>
         </ModalBody>
         <ModalFooter>

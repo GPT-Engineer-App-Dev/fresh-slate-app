@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useEvents, useAddEvent, useUpdateEvent, useDeleteEvent } from "../integrations/supabase/index.js";
+import { useEvents, useAddEvent, useUpdateEvent, useDeleteEvent, useVenues } from "../integrations/supabase/index.js";
 import { Container, Text, VStack, Heading, Button, useDisclosure, Table, Thead, Tbody, Tr, Th, Td } from "@chakra-ui/react";
 import { FaPaintBrush, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import EventCard from "../components/EventCard";
@@ -8,6 +8,7 @@ import EventModal from "../components/EventModal";
 const Index = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: events, isLoading, error } = useEvents();
+  const { data: venues, isLoading: isVenuesLoading, error: venuesError } = useVenues();
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const addEventMutation = useAddEvent();
@@ -29,6 +30,11 @@ const Index = () => {
   const handleOpenModal = (event = null) => {
     setSelectedEvent(event);
     onOpen();
+  };
+
+  const getVenueNameById = (id) => {
+    const venue = venues?.find(venue => venue.id === id);
+    return venue ? venue.name : "Unknown Venue";
   };
 
   return (
@@ -61,7 +67,7 @@ const Index = () => {
                 <Td>{event.name}</Td>
                 <Td>{event.description}</Td>
                 <Td>{event.date}</Td>
-                <Td>{event.venue_id}</Td>
+                <Td>{getVenueNameById(event.venue_id)}</Td>
                 <Td>
                   <Button leftIcon={<FaEdit />} colorScheme="blue" onClick={() => handleOpenModal(event)}>
                     Edit
@@ -76,7 +82,7 @@ const Index = () => {
         </Table>
       </VStack>
       )}
-      <EventModal isOpen={isOpen} onClose={onClose} onSave={selectedEvent ? handleEditEvent : handleAddEvent} event={selectedEvent} />
+      <EventModal isOpen={isOpen} onClose={onClose} onSave={selectedEvent ? handleEditEvent : handleAddEvent} event={selectedEvent} venues={venues} />
     </Container>
   );
 };

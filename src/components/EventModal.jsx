@@ -4,14 +4,20 @@ import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody,
 const EventModal = ({ isOpen, onClose, onSave, event }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [venueId, setVenueId] = useState("");
 
   useEffect(() => {
     if (event) {
       setTitle(event.title);
       setDescription(event.description);
+      setDate(event.date);
+      setVenueId(event.venue_id);
     } else {
       setTitle("");
       setDescription("");
+      setDate("");
+      setVenueId("");
     }
   }, [event]);
 
@@ -20,6 +26,8 @@ const EventModal = ({ isOpen, onClose, onSave, event }) => {
       id: event ? event.id : Date.now(),
       title,
       description,
+      date,
+      venue_id: venueId,
     };
     onSave(newEvent);
     onClose();
@@ -39,6 +47,14 @@ const EventModal = ({ isOpen, onClose, onSave, event }) => {
           <FormControl id="description" mt={4}>
             <FormLabel>Description</FormLabel>
             <Textarea value={description} onChange={(e) => setDescription(e.target.value)} />
+          </FormControl>
+          <FormControl id="date" mt={4}>
+            <FormLabel>Date</FormLabel>
+            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          </FormControl>
+          <FormControl id="venueId" mt={4}>
+            <FormLabel>Venue ID</FormLabel>
+            <Input value={venueId} onChange={(e) => setVenueId(e.target.value)} />
           </FormControl>
         </ModalBody>
         <ModalFooter>
